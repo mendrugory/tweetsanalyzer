@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block body_block %}
+<h1>Source Research</h1>
+<ul>
+    {% for tweet in tweet_sources %}
+        <li>
+            <b>{{forloop.counter0|add:"1"}}.</b> {{tweet.filter_key}} : {{tweet.value}}
+        </li>
+    {% endfor %}
+</ul>
+{% endblock %}
