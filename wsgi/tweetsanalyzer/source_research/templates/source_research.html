@@ -5,7 +5,7 @@
 <ul>
     {% for tweet in tweet_sources %}
         <li>
-            <b>{{forloop.counter0|add:"1"}}.</b> {{tweet.filter_key}} : {{tweet.value}}
+            <b>{{forloop.counter0|add:"1"}}.</b> <a target="_blank" href={{tweet.url}}/> {{tweet.filter_key}} </a> : {{tweet.value}}
         </li>
     {% endfor %}
 </ul>

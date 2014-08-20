@@ -7,6 +7,7 @@ class TweetSource(mongoengine.Document):
     count = mongoengine.IntField(default=0)
     last_change = mongoengine.StringField()
     value = mongoengine.IntField(default=0)
+    url = mongoengine.StringField(max_length=200, default="http://www.twitter.com")
 
     meta = {
         'indexes': ['filter_key', ('filter_key', '-value')],

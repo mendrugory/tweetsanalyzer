@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import os
 import settings_secret as secret
 
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -19,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ue)c2(3u=b12g=%3la#&ok&2+)jhinf%m&ogilti(j$r0w_jkx'
+SECRET_KEY = secret.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -85,6 +86,9 @@ SESSION_ENGINE = 'mongoengine.django.sessions' # optional
 
 MONGODB_HOST = secret.MONGODB_HOST
 MONGODB_NAME = secret.MONGODB_NAME
+MONGODB_PORT = secret.MONGODB_PORT
+MONGODB_USER = secret.MONGODB_USER
+MONGODB_PWD = secret.MONGODB_PWD
 
 
 # Twitter Connection data
@@ -111,4 +115,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, "static"),
+    '/var/www/static/',
+)
+
 

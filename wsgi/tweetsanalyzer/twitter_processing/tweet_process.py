@@ -1,9 +1,5 @@
 __author__ = 'mendrugory'
 
-import multiprocessing
-from tweetsanalyzer.twitter_processing.models import Tweet
-from tweetsanalyzer.source_research.models import TweetSource
-
 
 class TweetProcessor(object):
     '''
@@ -64,14 +60,15 @@ class SourceProcessor(TweetProcessor):
     Class to process the source of the tweet
     '''
 
-    def __init__(self, tweet_source):
-        super(SourceProcessor, self).__init__(tweet_source)
+    def __init__(self, tweet):
+        super(SourceProcessor, self).__init__(tweet)
 
     def process(self, tweet):
         super(SourceProcessor, self).process(tweet)
         if self.document.filter_key is None:
             self.document.filter_key = self.get_the_source(tweet.source)
             self.document.source = tweet.source
+            self.document.url = self.get_url(tweet.source)
         self.document.last_change = tweet.created_at
         self.document.count += 1
         self.update_value()
@@ -96,3 +93,44 @@ class SourceProcessor(TweetProcessor):
         '''
         self.document.value += 1
 
+    def get_url(self, source):
+        key = source.split("rel=")[0].split("href=")[1].split("\"")
+        return key[1].encode("utf-8")
+
+
+class LanguageProcessor(TweetProcessor):
+    '''
+    Class to process the language of the tweet
+    '''
+
+    def __init__(self, tweet):
+        super(LanguageProcessor, self).__init__(tweet)
+
+    def process(self, tweet):
+        super(LanguageProcessor, self).process(tweet)
+        if self.document.filter_key is None:
+            self.document.filter_key = self.get_the_language(tweet.lang)
+            self.document.language = tweet.source
+        self.document.last_change = tweet.created_at
+        self.document.count += 1
+        self.update_value()
+
+    def get_the_key(self, tweet):
+        '''
+        Get the key
+        '''
+        key = tweet.lang
+        return self.get_the_language(key)
+
+    def get_the_language(self, lang):
+        '''
+        Get the Language from the tweet
+        '''
+        language = lang.encode("utf-8")
+        return language
+
+    def update_value(self):
+        '''
+        Update method for the main value
+        '''
+        self.document.value += 1

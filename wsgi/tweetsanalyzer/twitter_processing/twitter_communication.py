@@ -3,12 +3,17 @@ __author__ = 'mendrugory'
 import sys
 import json
 import tweepy
+import random
+import time
 
 import tweetsanalyzer.settings as secret
 from tweetsanalyzer.twitter_processing.models import Tweet
 from tweetsanalyzer.twitter_processing.tweet_process import SourceProcessor
+from tweetsanalyzer.twitter_processing.tweet_process import LanguageProcessor
 from tweetsanalyzer.source_research.models import TweetSource
+from tweetsanalyzer.lang_research.models import TweetLanguage
 from tweetsanalyzer.twitter_processing.twitter_worker import Worker
+from tweetsanalyzer.settings import MONGODB_USER
 
 
 class CustomStreamListener(tweepy.StreamListener):
@@ -43,6 +48,11 @@ class CustomStreamListener(tweepy.StreamListener):
         print >> sys.stderr, 'Timeout...'
         return True # Don't kill the stream
 
+    @staticmethod
+    def delay():
+        delay = random.randint(0, 9) / 100.0
+        time.sleep(delay)
+
 
 class MongoDBStreamListener(CustomStreamListener):
 
@@ -53,7 +63,7 @@ class MongoDBStreamListener(CustomStreamListener):
         super(MongoDBStreamListener, self).on_data(tweet)
         json_tweet = json.loads(tweet)
         doc = self.process_tweet(json_tweet)
-        self.process_all_studies(doc)
+        MongoDBStreamListener.process_all_studies(doc)
 
     def on_status(self, status):
         super(MongoDBStreamListener, self).on_status(status)
@@ -82,13 +92,24 @@ class MongoDBStreamListener(CustomStreamListener):
         if tweet["coordinates"] is not None:
             doc.longitude = tweet["coordinates"]["coordinates"][0]
             doc.latitude = tweet["coordinates"]["coordinates"][1]
-        doc.save()
+        self.save_tweet(doc, tweet)
+        MongoDBStreamListener.delay()
         return doc
 
-    def process_all_studies(self, tweet):
+    @staticmethod
+    def process_all_studies(tweet):
         source_worker = Worker(SourceProcessor(TweetSource), tweet)
         source_worker.start()
+        lang_worker = Worker(LanguageProcessor(TweetLanguage), tweet)
+        lang_worker.start()
 
+    def save_tweet(self, doc, tweet):
+        if MONGODB_USER is None:
+            doc.save()
+            # try:
+            #     print str(tweet)
+            # except Exception as ex:
+            #     print ex.message
 
     def get_user_info(self, tweet):
         pass
