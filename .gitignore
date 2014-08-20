@@ -55,4 +55,7 @@ docs/_build/
 #Others
 wsgi/tweetsanalyzer/settings_secret.py
 .*~
+.
+..
+*~
 

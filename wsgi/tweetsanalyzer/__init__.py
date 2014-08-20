@@ -1,3 +1,5 @@
+__author__ = 'mendrugory'
+
 
 from twitter_processing.twitter_communication import TwitterStreaming
 
